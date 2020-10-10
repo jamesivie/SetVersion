@@ -11,7 +11,7 @@ namespace SetVersion
         private static Regex AssemblyInfoVersionReplace = new Regex(@"(?<=\[.*Assembly.*Version ?\(\"")([0-9]+(?:\.(?:[0-9]+|\*)){1,3})", RegexOptions.Compiled);
         static void Main(string[] args)
         {
-            if (args.Length < 2)
+            if (args.Length < 1)
             {
                 Console.WriteLine("Usage: ");
                 Console.WriteLine("\tSetVersion <version_number>");
@@ -19,7 +19,7 @@ namespace SetVersion
                 return;
             }
             // validate the specified version number
-            if (!VersionNumberValidate.IsMatch(args[1]))
+            if (!VersionNumberValidate.IsMatch(args[0]))
             {
                 Console.WriteLine("The specified version must be of the form nnn.nnn[.nnn[.nnn]]");
                 Console.WriteLine("");
@@ -27,11 +27,11 @@ namespace SetVersion
             }
             foreach (string targetFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj", SearchOption.AllDirectories))
             {
-                UpdateFile(targetFile, args[1]);
+                UpdateFile(targetFile, args[0]);
             }
             foreach (string targetFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "AssemblyInfo.cs", SearchOption.AllDirectories))
             {
-                UpdateFile(targetFile, args[1]);
+                UpdateFile(targetFile, args[0]);
             }
         }
 
