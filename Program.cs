@@ -7,8 +7,8 @@ namespace SetVersion
     class Program
     {
         private static Regex VersionNumberValidate = new Regex(@"^[0-9]+(\.[0-9]+){1,3}$", RegexOptions.Compiled);
-        private static Regex ProjectFileVersionReplace = new Regex(@"(?<=<(?:Assembly|File|Package|)Version>)[0-9]+(\.([0-9]+|\*)){1,3}", RegexOptions.Compiled);
-        private static Regex AssemblyInfoVersionReplace = new Regex(@"(?<=\[.*Assembly.*Version ?\(\"")([0-9]+(?:\.(?:[0-9]+|\*)){1,3})", RegexOptions.Compiled);
+        private static Regex ProjectFileVersionReplace = new Regex(@"(?<=<(?:Assembly|File|Package|)Version>)[^<]*", RegexOptions.Compiled);
+        private static Regex AssemblyInfoVersionReplace = new Regex(@"(?<=\[.*Assembly.*Version ?\(\"")([^\""]*)", RegexOptions.Compiled);
         static void Main(string[] args)
         {
             if (args.Length < 1)
