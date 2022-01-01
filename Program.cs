@@ -8,6 +8,7 @@ namespace SetVersion
     {
         private static Regex VersionNumberValidate = new Regex(@"^[0-9]+(\.[0-9]+){1,3}$", RegexOptions.Compiled);
         private static Regex ProjectFileVersionReplace = new Regex(@"(?<=<(?:Assembly|File|Package|)Version>)[^<]*", RegexOptions.Compiled);
+        private static Regex PackageOutputPathReplace = new Regex(@"<PackageOutputPath>[^<]*</PackageOutputPath>", RegexOptions.Compiled);
         private static Regex AssemblyInfoVersionReplace = new Regex(@"(?<=\[.*Assembly.*Version ?\(\"")([^\""]*)", RegexOptions.Compiled);
         static void Main(string[] args)
         {
@@ -18,8 +19,15 @@ namespace SetVersion
                 Console.WriteLine("");
                 return;
             }
-            // validate the specified version number
-            if (!VersionNumberValidate.IsMatch(args[0]))
+            string version = null;
+            bool noPackageOutputPath = false;
+            foreach (string arg in args)
+            {
+                if (String.Equals(arg, "-NoPackageOutputPath") || String.Equals(arg, "/NoPackageOutputPath")) noPackageOutputPath = true;
+                // check for a version number
+                if (VersionNumberValidate.IsMatch(arg)) version = arg;
+            }
+            if (version == null)
             {
                 Console.WriteLine("The specified version must be of the form nnn.nnn[.nnn[.nnn]]");
                 Console.WriteLine("");
@@ -27,28 +35,26 @@ namespace SetVersion
             }
             foreach (string targetFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj", SearchOption.AllDirectories))
             {
-                UpdateFile(targetFile, args[0]);
+                UpdateProjectFile(targetFile, args[0], noPackageOutputPath);
             }
             foreach (string targetFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "AssemblyInfo.cs", SearchOption.AllDirectories))
             {
-                UpdateFile(targetFile, args[0]);
+                UpdateCodeFile(targetFile, args[0]);
             }
         }
 
-        private static void UpdateFile(string targetFile, string newVersion)
+        private static void UpdateProjectFile(string targetFile, string newVersion, bool noPackageOutputPath)
         {
             string targetFileContents = File.ReadAllText(targetFile);
-            switch (Path.GetExtension(targetFile).ToUpperInvariant())
-            {
-                case ".CSPROJ":
-                    targetFileContents = ProjectFileVersionReplace.Replace(targetFileContents, newVersion);
-                    break;
-                case ".CS":
-                    targetFileContents = AssemblyInfoVersionReplace.Replace(targetFileContents, newVersion);
-                    break;
-                default:
-                    break;
-            }
+            targetFileContents = ProjectFileVersionReplace.Replace(targetFileContents, newVersion);
+            if (noPackageOutputPath) targetFileContents = PackageOutputPathReplace.Replace(targetFileContents, "");
+            File.WriteAllText(targetFile, targetFileContents);
+            Console.WriteLine($"Updated versions in {targetFile} to {newVersion}.");
+        }
+        private static void UpdateCodeFile(string targetFile, string newVersion)
+        {
+            string targetFileContents = File.ReadAllText(targetFile);
+            targetFileContents = AssemblyInfoVersionReplace.Replace(targetFileContents, newVersion);
             File.WriteAllText(targetFile, targetFileContents);
             Console.WriteLine($"Updated versions in {targetFile} to {newVersion}.");
         }

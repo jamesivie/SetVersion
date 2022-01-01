@@ -7,7 +7,7 @@
     <Authors>James Ivie</Authors>
     <Company>James Ivie</Company>
     <Description>An MIT-licensed utility program that Inserts or updates specially-marked-up sample code from a csharp file into a markdown readme file.</Description>
-    <Copyright>2020</Copyright>
+    <Copyright>2020-2022</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jamesivie/SetVersion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jamesivie/SetVersion</RepositoryUrl>

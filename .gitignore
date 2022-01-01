@@ -2,7 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/SetVersion/DesignTimeBuild
-/.vs/SetVersion/v16
+/.vs/SetVersion
 /bin
 /obj
